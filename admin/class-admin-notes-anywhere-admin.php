@@ -140,7 +140,6 @@ class Admin_Notes_Anywhere_Admin {
 			$page             = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
 			$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
 			$uid              = get_current_user_id();
-			$timezone         = wp_timezone();
 			$current_datetime = current_datetime();
 			$sql_datetime     = $current_datetime->format( 'Y-m-d H:i:s' );
 
@@ -167,6 +166,7 @@ class Admin_Notes_Anywhere_Admin {
 							'creator_id'   => $uid,
 							'page'         => $page,
 							'content'      => $content,
+							'date_updated' => $sql_datetime,
 							'date_created' => $sql_datetime,
 						),
 						array( '%d', '%s', '%s', '%s' ),
@@ -176,12 +176,15 @@ class Admin_Notes_Anywhere_Admin {
 					$wpdb->update(
 						$table_name,
 						array(
-							'creator_id'   => $uid,
-							'page'         => $page,
 							'content'      => $content,
 							'date_updated' => $sql_datetime,
 						),
-						array( '%d', '%s', '%s', '%s' ),
+						array(
+							'creator_id'   => $uid,
+							'page'         => $page,
+						),
+						array( '%s', '%s' ),
+						array( '%d', '%s' ),
 					);
 				}
 			}
