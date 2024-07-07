@@ -1,0 +1,42 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+ #quill-container {
+    padding-right: 20px;
+ }
+
+#quill-editor {
+    background: white;
+    height: 200px;
+}
+.ql-toolbar {
+    height: 50px;;
+}
+
+/* CSS for arrow down when #quill-container is not displayed */
+#wp-admin-bar-admin-notes-anywhere a::after {
+    right: 0;
+    content: "\f140"; /* Arrow down Dashicon */
+    font: normal 20px/1 dashicons;
+    speak: never;
+    display: inline-block;
+    padding: 0 5px 0 0;
+    bottom: 5px;
+    position: relative;
+    vertical-align: bottom;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-decoration: none;
+}
+
+.ql-save::after {
+    content: "Save";
+    border: 1px solid #2771b1;
+    border-radius: 2px;
+    padding: 5px;
+    font-size: 1.1em;
+    background: #2771b1;
+    color: white;
+  }
