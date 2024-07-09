@@ -127,69 +127,62 @@ class Admin_Notes_Anywhere_Admin {
 
 	public function ana_save_content() {
 
-		$nonce_verified = check_ajax_referer( 'nonce', 'nonce' );
+		check_ajax_referer( 'nonce', 'nonce' );			
 
-		if ( $nonce_verified !== 1 ) {
-			$data['error'] = 'Invalid nonce';
-		} else {
-
-			global $wpdb;
-
-			$data = array();
-
-			$page             = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
-			$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
-			$uid              = get_current_user_id();
-			$current_datetime = current_datetime();
-			$sql_datetime     = $current_datetime->format( 'Y-m-d H:i:s' );
-
-			$table_name = $wpdb->prefix . 'ana_notes';
-
-			if ( $page === '' && $content === '' && $uid === '' ) {
-
-				$data['error'] = 'Note could not be saved.';
-			} else {
-
-				// Check if there is a note for this page.
-				$count_rows = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT COUNT(*) from $table_name WHERE page = %s",
-						$page
-					)
-				);
-
-				if ( $count_rows === '0' ) {
-					// If not, create new row.
-					$wpdb->insert(
-						$table_name,
-						array(
-							'creator_id'   => $uid,
-							'page'         => $page,
-							'content'      => $content,
-							'date_updated' => $sql_datetime,
-							'date_created' => $sql_datetime,
-						),
-						array( '%d', '%s', '%s', '%s' ),
-					);
-				} else {
-					// If so, update existing row with new content.
-					$wpdb->update(
-						$table_name,
-						array(
-							'content'      => $content,
-							'date_updated' => $sql_datetime,
-						),
-						array(
-							'creator_id'   => $uid,
-							'page'         => $page,
-						),
-						array( '%s', '%s' ),
-						array( '%d', '%s' ),
-					);
-				}
-			}
-			wp_send_json( $data );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'error' => 'Permission denied' ) );
 		}
+
+		global $wpdb;
+
+		// $data = array();
+
+		$page             = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
+		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
+		$uid              = get_current_user_id();
+		$current_datetime = current_datetime();
+		$sql_datetime     = $current_datetime->format( 'Y-m-d H:i:s' );
+
+		$table_name = $wpdb->prefix . 'ana_notes';
+
+		// Check if there is a note for this page.
+		$count_rows = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) from $table_name WHERE page = %s",
+				$page
+			)
+		);
+
+		if ( $count_rows === '0' ) {
+			// If not, create new row.
+			$wpdb->insert(
+				$table_name,
+				array(
+					'creator_id'   => $uid,
+					'page'         => $page,
+					'content'      => $content,
+					'date_updated' => $sql_datetime,
+					'date_created' => $sql_datetime,
+				),
+				array( '%d', '%s', '%s', '%s' ),
+			);
+		} else {
+			// If so, update existing row with new content.
+			$wpdb->update(
+				$table_name,
+				array(
+					'content'      => $content,
+					'date_updated' => $sql_datetime,
+				),
+				array(
+					'creator_id'   => $uid,
+					'page'         => $page,
+				),
+				array( '%s', '%s' ),
+				array( '%d', '%s' ),
+			);
+		}
+		wp_send_json_success( array( 'message' => 'Note saved successfully' ) );
 	}
 
 	public function ana_get_content() {
