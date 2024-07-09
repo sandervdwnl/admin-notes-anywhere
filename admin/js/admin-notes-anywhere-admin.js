@@ -45,7 +45,8 @@
 			['bold', 'italic', 'underline'],
 			[{ 'list': 'ordered' }, { 'list': 'bullet' }],
 			['align'],
-			['save']
+			['save'],
+			['response']
 		];
 
 		// Initialize Quill on the hidden element
@@ -67,32 +68,29 @@
 			type: 'POST',
 			data: {
 				action: 'ana_get_content',
-				nonce: ana_data_object.nonce,
-			},	
-			success: function (response) {
-				if (response.success) {
-					console.log(response.data.content); // Check response in console
-					if (response.data.content) {
-						// Check if current user is creator
-						if (response.data.creator_id != response.data.current_user_id) {
-							// If not, set Quill to readonly and hide toolbar.
-							quill.enable(false);
-							$('.ql-toolbar').hide();
-						}
-						// Place retrieved content in Quill editor.
-						var delta = quill.clipboard.convert({ html: response.data.content });
-						quill.setContents(delta);
-						$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
-					} else {
-						console.error('No data received or not successful:', response);
-					}
-				} else {
-					console.error(response.data);
-				}
-			},
-			error: function (xhr, status, error) {
-				console.error('AJAX  Error while getting note:', error);
+				nonce: ana_data_object.check_ana_get_nonce,
 			}
+		})	
+		.done(function (response) {
+			if (response.success) {				
+				if (response.data.content) {
+					// Check if current user is creator
+					if (response.data.creator_id != response.data.current_user_id) {
+						// If not, set Quill to readonly and hide toolbar.
+						quill.enable(false);
+						$('.ql-toolbar').hide();
+					}
+					// Place retrieved content in Quill editor.
+					var delta = quill.clipboard.convert({ html: response.data.content });
+					quill.setContents(delta);
+					$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
+				} 
+			} else {
+				console.error('Error while receiving data:', response);
+			}
+		})
+		.fail(function (xhr, status, error) {
+				console.error('AJAX Error:', error);
 		});
 
 		// Click event handler for showing the Quill editor
@@ -101,11 +99,9 @@
 
 			// Toggle the display of the Quill editor container
 			$('#quill-container').toggle();
-
 		});
 
 		$('.ql-save').on('click', function () {
-			console.log('Save function triggered');
 			var anaContent = $('.ql-editor').html();
 			var nonce = $(this).data('nonce');
 
@@ -116,22 +112,25 @@
 				data: {
 					action: 'ana_save_content',
 					content: anaContent,
-					nonce: ana_data_object.nonce,
-				},
-				success: function (response) {
-					console.log(response);
-
-					if (response.success) {
-						window.alert('Note saved');
-					} else {
-						window.alert('Failed to save note');
-					}
-				},
-				error: function (xhr, status, error) {
-					console.error('AJAX Error while savind note:', error);
-					window.alert('AJAX Error: ' + error);
+					nonce: ana_data_object.check_ana_save_nonce,
 				}
-			});
+			})
+			.done(function (response) {
+				if (response.success) {
+					$('.ql-save').css('visibility', 'hidden');
+					$('.ql-response').html('<div style="color:green; width: 100px; line-height: 0.5rem; font-size: .9rem; margin-left:5px; padding: 5px;">&#10004 Note saved</div>');
+					setTimeout(function() {
+						$('.ql-response').html("");
+						$('.ql-save').css('visibility', 'visible');
+					}, 3000);
+				} else {
+					window.alert('Failed to save note: ' + response.data.message);
+				}
+			})
+			.fail(function (xhr, status, error) {
+				console.error('AJAX Error:', nonce);
+				window.alert('AJAX Error: ' + error);
+			});			
 		});
 	});	
 })(jQuery);

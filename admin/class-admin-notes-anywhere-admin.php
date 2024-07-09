@@ -104,7 +104,8 @@ class Admin_Notes_Anywhere_Admin {
 			$this->plugin_name,
 			'ana_data_object',
 			array(
-				'nonce'    => wp_create_nonce( 'nonce' ),
+				'check_ana_get_nonce'    => wp_create_nonce( 'ana_get_nonce' ),
+				'check_ana_save_nonce'    => wp_create_nonce( 'ana_save_nonce' ),
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 			)
 		);
@@ -127,7 +128,7 @@ class Admin_Notes_Anywhere_Admin {
 
 	public function ana_save_content() {
 
-		check_ajax_referer( 'nonce', 'nonce' );			
+		check_ajax_referer( 'ana_save_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'error' => 'Permission denied' ) );
@@ -187,7 +188,7 @@ class Admin_Notes_Anywhere_Admin {
 
 	public function ana_get_content() {
 
-		$nonce_verified = check_ajax_referer( 'nonce', 'nonce' );
+		$nonce_verified = check_ajax_referer( 'ana_get_nonce', 'nonce' );
 
 		if ( $nonce_verified !== 1 ) {
 			$data['error'] = 'Invalid nonce';
