@@ -138,7 +138,8 @@ class Admin_Notes_Anywhere_Admin {
 
 		global $wpdb;
 
-		$page             = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
+		$parged_url       = parse_url( $_SERVER['HTTP_REFERER'] );
+		$page             = isset( $parged_url['path'] ) ? $parged_url['path'] : '';
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
 		$uid              = get_current_user_id();
 		$current_datetime = current_datetime();
@@ -165,7 +166,7 @@ class Admin_Notes_Anywhere_Admin {
 					'date_updated' => $sql_datetime,
 					'date_created' => $sql_datetime,
 				),
-				array( '%d', '%s', '%s', '%s' ),
+				array( '%d', '%s', '%s', '%s', '%s' ),
 			);
 		} else {
 			// If so, update existing row with new content.
@@ -198,10 +199,9 @@ class Admin_Notes_Anywhere_Admin {
 
 			$data = array();
 
-			$page       = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
+			$parged_url = parse_url( $_SERVER['HTTP_REFERER'] );
+			$page       = isset( $parged_url['path'] ) ? $parged_url['path'] : '';
 			$content    = '';
-			$table_name = $wpdb->prefix . 'ana_notes';
-
 			$table_name = $wpdb->prefix . 'ana_notes';
 
 			$row = $wpdb->get_row(

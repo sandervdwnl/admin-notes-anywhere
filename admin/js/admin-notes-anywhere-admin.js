@@ -59,14 +59,12 @@
 			theme: 'snow'
 		});
 
-		console.log(ana_data_object.is_admin);
-		console.log('yes');
-		if(ana_data_object.is_admin !== '1') {
+		// Remove Save button when user is not Admin.
+		if(ana_data_object.is_admin === '1') {
 			var anaSaveNonce = ana_data_object.nonce;
 			// Add nonce to Save-button.
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
 		} else {
-			console.log('no');
 			$('.ql-save').remove();
 		}
 
