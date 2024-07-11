@@ -29,16 +29,16 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
-
-
 	jQuery(document).ready(function ($) {
+
+		/**
+		 * Initialize Quill
+		 */
 
 		// Create hidden elements to run Quill in, if not existing.
 		if (!$('#quill-container').length) {
 			$('#wpadminbar').after('<div id="quill-container" style="display: none;"><div id="quill-editor"></div></div>');
 		}
-
-		var anaSaveNonce = ana_data_object.nonce;
 
 		// Quill toolbar options
 		const toolbarOptions = [
@@ -48,6 +48,7 @@
 			['save'],
 			['response']
 		];
+			
 
 		// Initialize Quill on the hidden element
 		const quill = new Quill('#quill-editor', {
@@ -58,8 +59,20 @@
 			theme: 'snow'
 		});
 
-		// Add nonce to Save-button.
-		$('.ql-save').attr('data-nonce', anaSaveNonce);
+		console.log(ana_data_object.is_admin);
+		console.log('yes');
+		if(ana_data_object.is_admin !== '1') {
+			var anaSaveNonce = ana_data_object.nonce;
+			// Add nonce to Save-button.
+			$('.ql-save').attr('data-nonce', anaSaveNonce);
+		} else {
+			console.log('no');
+			$('.ql-save').remove();
+		}
+
+		/**
+		 * Retrieve the note for the current page.
+		 */
 
 		// Get the note from the db.
 		$.ajax({
@@ -74,7 +87,7 @@
 		.done(function (response) {
 			if (response.success) {				
 				if (response.data.content) {
-					// Check if current user is creator
+					// Check if current user is creator.
 					if (response.data.creator_id != response.data.current_user_id) {
 						// If not, set Quill to readonly and hide toolbar.
 						quill.enable(false);
@@ -93,13 +106,21 @@
 				console.error('AJAX Error:', error);
 		});
 
-		// Click event handler for showing the Quill editor
+		/**
+		 * Open/close Quill editor.
+		 */
+
+		// Click event handler for showing the Quill editor.
 		$('#wp-admin-bar-admin-notes-anywhere a.ab-item').on('click', function (e) {
 			e.preventDefault(); // Prevent default action
 
-			// Toggle the display of the Quill editor container
+			// Toggle the display of the Quill editor container.
 			$('#quill-container').toggle();
 		});
+
+		/**
+		 * Save note in DB.
+		 */
 
 		$('.ql-save').on('click', function () {
 			var anaContent = $('.ql-editor').html();

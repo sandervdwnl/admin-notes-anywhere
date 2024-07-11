@@ -104,9 +104,10 @@ class Admin_Notes_Anywhere_Admin {
 			$this->plugin_name,
 			'ana_data_object',
 			array(
-				'check_ana_get_nonce'    => wp_create_nonce( 'ana_get_nonce' ),
-				'check_ana_save_nonce'    => wp_create_nonce( 'ana_save_nonce' ),
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'check_ana_get_nonce'  => wp_create_nonce( 'ana_get_nonce' ),
+				'check_ana_save_nonce' => wp_create_nonce( 'ana_save_nonce' ),
+				'is_admin'             => current_user_can( 'manage_options' ),
+				'ajax_url'             => admin_url( 'admin-ajax.php' ),
 			)
 		);
 	}
@@ -130,13 +131,12 @@ class Admin_Notes_Anywhere_Admin {
 
 		check_ajax_referer( 'ana_save_nonce', 'nonce' );
 
+		// Only admins can add notes.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'error' => 'Permission denied' ) );
 		}
 
 		global $wpdb;
-
-		// $data = array();
 
 		$page             = isset( $_SERVER['HTTP_REFERER'] ) ? basename( $_SERVER['HTTP_REFERER'] ) : '';
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
@@ -176,8 +176,8 @@ class Admin_Notes_Anywhere_Admin {
 					'date_updated' => $sql_datetime,
 				),
 				array(
-					'creator_id'   => $uid,
-					'page'         => $page,
+					'creator_id' => $uid,
+					'page'       => $page,
 				),
 				array( '%s', '%s' ),
 				array( '%d', '%s' ),
