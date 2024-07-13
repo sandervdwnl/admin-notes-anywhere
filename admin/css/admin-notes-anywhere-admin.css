@@ -31,15 +31,33 @@
     text-decoration: none;
 }
 
-.ql-save::after {
-    content: "Save";
+#quill-container .ql-toolbar .ql-save {
     border: 1px solid #2771b1;
     border-radius: 2px;
     padding: 5px;
     font-size: 1.1em;
     background: #2771b1;
     color: white;
+    float: unset;
+    width: 50px;
+    margin-right: 15px;
+    line-height: 1em;
+    height: 27px;
   }
+
+  #quill-container .ql-toolbar .ql-response {
+    text-align: center; 
+    background:#46b450; 
+    color: #ffffff; 
+    width: 200px; 
+    line-height: 0.5rem; 
+    font-size: .9rem; 
+    margin-left:5px; 
+    padding: 5px;
+    display: inline;
+    visibility: hidden;
+  }
+
 
   .ql-formats {
     line-height: 2rem;

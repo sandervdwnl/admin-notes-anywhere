@@ -140,6 +140,7 @@ class Admin_Notes_Anywhere_Admin {
 
 		$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
 		$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
+		// When page is admin and query contains parameter page (...admin.php/?page=example...), save path + page query arg.
 		if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
 			if ( str_contains( $parsed_url['query'], '&' ) ) {
 				$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
@@ -208,7 +209,7 @@ class Admin_Notes_Anywhere_Admin {
 
 			$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
 			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
-			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
+			// When page is admin and query contains parameter page (...admin.php/?page=example...), check db for path + page query arg.
 			if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
 				if ( str_contains( $parsed_url['query'], '&' ) ) {
 					$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
