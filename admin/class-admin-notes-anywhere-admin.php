@@ -138,8 +138,15 @@ class Admin_Notes_Anywhere_Admin {
 
 		global $wpdb;
 
-		$parged_url       = parse_url( $_SERVER['HTTP_REFERER'] );
-		$page             = isset( $parged_url['path'] ) ? $parged_url['path'] : '';
+		$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
+		$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
+		if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
+			if ( str_contains( $parsed_url['query'], '&' ) ) {
+				$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
+			} else {
+				$page .= '--' . $parsed_url['query'];
+			}
+		}
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
 		$uid              = get_current_user_id();
 		$current_datetime = current_datetime();
@@ -199,8 +206,16 @@ class Admin_Notes_Anywhere_Admin {
 
 			$data = array();
 
-			$parged_url = parse_url( $_SERVER['HTTP_REFERER'] );
-			$page       = isset( $parged_url['path'] ) ? $parged_url['path'] : '';
+			$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
+			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
+			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
+			if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
+				if ( str_contains( $parsed_url['query'], '&' ) ) {
+					$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
+				} else {
+					$page .= '--' . $parsed_url['query'];
+				}
+			}
 			$content    = '';
 			$table_name = $wpdb->prefix . 'ana_notes';
 

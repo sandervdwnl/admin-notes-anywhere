@@ -46,7 +46,8 @@
 			[{ 'list': 'ordered' }, { 'list': 'bullet' }],
 			['align'],
 			['save'],
-			['response']
+			['public'],
+			['response'],
 		];
 			
 
@@ -59,14 +60,17 @@
 			theme: 'snow'
 		});
 
-		// Remove Save button when user is not Admin.
+		// Add/remove admin toolbar functions when user is/isnot not Admin.
 		if(ana_data_object.is_admin === '1') {
 			var anaSaveNonce = ana_data_object.nonce;
 			// Add nonce to Save-button.
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
+			$('.ql-public').after('<input type="checkbox" id="ana-public-checkbox" name="public-note" value="public"><span class="ana-checkbox-text">Public</span>');
 		} else {
 			$('.ql-save').remove();
+			$('.ql-public').remove();
 		}
+		
 
 		/**
 		 * Retrieve the note for the current page.
@@ -137,10 +141,16 @@
 			.done(function (response) {
 				if (response.success) {
 					$('.ql-save').css('visibility', 'hidden');
-					$('.ql-response').html('<div style="color:green; width: 100px; line-height: 0.5rem; font-size: .9rem; margin-left:5px; padding: 5px;">&#10004 Note saved</div>');
+					$('.ql-public').css('visibility', 'hidden');
+					$('#ana-public-checkbox').css('visibility', 'hidden');
+					$('.ana-checkbox-text').css('visibility', 'hidden');
+					$('.ql-response').html('<div style="text-align: center; color:#46b450; border: 1px solid #46b450; width: 200px; line-height: 0.5rem; font-size: .9rem; margin-left:5px; padding: 5px;">&#10004 Note saved</div>');
 					setTimeout(function() {
 						$('.ql-response').html("");
 						$('.ql-save').css('visibility', 'visible');
+						$('.ql-public').css('visibility', 'visible');
+						$('#ana-public-checkbox').css('visibility', 'visible');
+						$('.ana-checkbox-text').css('visibility', 'visible');
 					}, 3000);
 				} else {
 					window.alert('Failed to save note: ' + response.data.message);
