@@ -149,6 +149,7 @@ class Admin_Notes_Anywhere_Admin {
 			}
 		}
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
+		$public           = isset( $_POST['public'] ) ? wp_kses_post( $_POST['public'] ) : 0;
 		$uid              = get_current_user_id();
 		$current_datetime = current_datetime();
 		$sql_datetime     = $current_datetime->format( 'Y-m-d H:i:s' );
@@ -171,10 +172,11 @@ class Admin_Notes_Anywhere_Admin {
 					'creator_id'   => $uid,
 					'page'         => $page,
 					'content'      => $content,
+					'public'       => $public,
 					'date_updated' => $sql_datetime,
 					'date_created' => $sql_datetime,
 				),
-				array( '%d', '%s', '%s', '%s', '%s' ),
+				array( '%d', '%s', '%s', '%d', '%s', '%s' ),
 			);
 		} else {
 			// If so, update existing row with new content.
@@ -182,13 +184,14 @@ class Admin_Notes_Anywhere_Admin {
 				$table_name,
 				array(
 					'content'      => $content,
+					'public'       => $public,
 					'date_updated' => $sql_datetime,
 				),
 				array(
 					'creator_id' => $uid,
 					'page'       => $page,
 				),
-				array( '%s', '%s' ),
+				array( '%s', '%d', '%s' ),
 				array( '%d', '%s' ),
 			);
 		}
@@ -217,12 +220,11 @@ class Admin_Notes_Anywhere_Admin {
 					$page .= '--' . $parsed_url['query'];
 				}
 			}
-			$content    = '';
 			$table_name = $wpdb->prefix . 'ana_notes';
 
 			$row = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT content, creator_id from $table_name WHERE page = %s",
+					"SELECT content, creator_id, public from $table_name WHERE page = %s",
 					$page
 				)
 			);
@@ -230,6 +232,7 @@ class Admin_Notes_Anywhere_Admin {
 			if ( $row ) {
 				$data['content']         = $row->content;
 				$data['creator_id']      = $row->creator_id;
+				$data['public']          = $row->public;
 				$data['current_user_id'] = get_current_user_id();
 			}
 			wp_send_json_success( $data );

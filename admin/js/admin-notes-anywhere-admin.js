@@ -57,6 +57,8 @@
 			theme: 'snow'
 		});
 
+		
+
 		// Add save button, public checkbox and response to toolbar, if user is admin.
 		if(ana_data_object.is_admin === '1') {
 			$('.ql-toolbar').append('<button type="button" class="ql-save" aria-pressed="false" aria-label="save">Save</button>');
@@ -67,6 +69,16 @@
 			var anaSaveNonce = ana_data_object.nonce;
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
 		} 
+
+		// Add event listener for the dynamically added checkbox
+		var public_checkbox_checked = 0;
+		$('#ana-public-checkbox').change(function() {
+			if ($(this).is(':checked')) {
+				public_checkbox_checked = 1;
+			} else {
+				public_checkbox_checked = 0;
+			}
+		});
 		
 		/**
 		 * Retrieve the note for the current page.
@@ -95,6 +107,12 @@
 					var delta = quill.clipboard.convert({ html: response.data.content });
 					quill.setContents(delta);
 					$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
+					// console.log(response.data.public);
+					if(response.data.public === "1" ) {
+						$('#ana-public-checkbox').prop('checked', true);
+					} else {
+						$('#ana-public-checkbox').prop('checked', false);
+					}
 				} 
 			} else {
 				console.error('Error while receiving data:', response);
@@ -123,7 +141,7 @@
 		$('.ql-save').on('click', function () {
 			var anaContent = $('.ql-editor').html();
 			var nonce = $(this).data('nonce');
-
+			var public_checkbox_checked = $('#ana-public').prop('checked');
 			$.ajax({
 				url: ana_data_object.ajax_url,
 				dataType: 'json',
@@ -131,6 +149,7 @@
 				data: {
 					action: 'ana_save_content',
 					content: anaContent,
+					public: public_checkbox_checked,
 					nonce: ana_data_object.check_ana_save_nonce,
 				}
 			})
