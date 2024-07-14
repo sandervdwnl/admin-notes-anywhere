@@ -57,8 +57,6 @@
 			theme: 'snow'
 		});
 
-		
-
 		// Add save button, public checkbox and response to toolbar, if user is admin.
 		if(ana_data_object.is_admin === '1') {
 			$('.ql-toolbar').append('<button type="button" class="ql-save" aria-pressed="false" aria-label="save">Save</button>');
@@ -141,7 +139,7 @@
 		$('.ql-save').on('click', function () {
 			var anaContent = $('.ql-editor').html();
 			var nonce = $(this).data('nonce');
-			var public_checkbox_checked = $('#ana-public').prop('checked');
+			// var public_checkbox_checked = $('#ana-public').prop('checked');
 			$.ajax({
 				url: ana_data_object.ajax_url,
 				dataType: 'json',
