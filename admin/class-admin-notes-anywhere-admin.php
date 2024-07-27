@@ -234,6 +234,8 @@ class Admin_Notes_Anywhere_Admin {
 				$data['creator_id']      = $row->creator_id;
 				$data['public']          = $row->public;
 				$data['current_user_id'] = get_current_user_id();
+				$data['is_admin']        = current_user_can( 'manage_options' );
+				$data['is_creator']      = get_current_user_id() == $row->creator_id ? 1 : 0;
 			}
 			wp_send_json_success( $data );
 		}

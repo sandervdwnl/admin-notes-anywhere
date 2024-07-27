@@ -46,7 +46,7 @@
 			[{ 'list': 'ordered' }, { 'list': 'bullet' }],
 			['align'],
 		];
-			
+
 
 		// Initialize Quill on the hidden element
 		const quill = new Quill('#quill-editor', {
@@ -58,29 +58,49 @@
 		});
 
 		// Add save button, public checkbox and response to toolbar, if user is admin.
-		if(ana_data_object.is_admin === '1') {
+		if (ana_data_object.is_admin === '1') {
 			$('.ql-toolbar').append('<button type="button" class="ql-save" aria-pressed="false" aria-label="save">Save</button>');
 			$('.ql-toolbar').append('<input type="checkbox" id="ana-public-checkbox" name="public-note" value="public"><span class="ana-checkbox-text">Public</span>');
 			$('.ql-toolbar').append('<div class="ql-response">&#10004 Note saved</div>');
-			
+
 			// Add nonce to Save-button.
 			var anaSaveNonce = ana_data_object.nonce;
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
-		} 
+		}
 
-		// Add event listener for the dynamically added checkbox
+		// Add event listener for the dynamically added checkbox and save status to variable.
 		var public_checkbox_checked = 0;
-		$('#ana-public-checkbox').change(function() {
+		$('#ana-public-checkbox').change(function () {
 			if ($(this).is(':checked')) {
 				public_checkbox_checked = 1;
 			} else {
 				public_checkbox_checked = 0;
 			}
 		});
-		
+
+		// Define the new CSS rule to change pseudo-element when needed (this cannot be done directly).
+
+		var newPseudoStyle = `
+			#wp-admin-bar-admin-notes-anywhere a::after {
+				right: 0;
+				content: "\\f160"; /* New Lock Dashicon */
+		}
+			#wp-admin-bar-admin-notes-anywhere a {
+				pointer-events: none;
+		}
+		`;
+
 		/**
 		 * Retrieve the note for the current page.
 		 */
+
+		var isAdmin = '0';
+		var hiddenMode = '0';
+		var lockedMode = '0';
+		var hasNote = '0';
+		var readOnlyMode = '0';
+		var isPublic = '0';
+		var isCreator = '0';
 
 		// Get the note from the db.
 		$.ajax({
@@ -91,33 +111,88 @@
 				action: 'ana_get_content',
 				nonce: ana_data_object.check_ana_get_nonce,
 			}
-		})	
+		})
 		.done(function (response) {
-			if (response.success) {				
+			if (response.success) {
+				console.log('admin response: ' + response.data.is_admin);
+				console.log('creator id: ' + response.data.creator_id);
+				console.log('current user id: ' + response.data.current_user_id);
+				console.log('creator response: ' + response.data.is_creator);
+				// Set vars.
+				if (response.data.is_admin == '1') {
+					console.log('is admin');
+					isAdmin = '1'
+				}
 				if (response.data.content) {
-					// Check if current user is creator.
-					if (response.data.creator_id != response.data.current_user_id) {
-						// If not, set Quill to readonly and hide toolbar.
-						quill.enable(false);
-						$('.ql-toolbar').hide();
+					console.log('has note');
+					hasNote = '1';
+					if (response.data.is_creator == '1') {
+						console.log('is creator');
+						isCreator = '1';
+					}
+					if (response.data.public == '1') {
+						console.log('is public');
+						isPublic = '1';
+					}
+				}
+
+				// Define how to display Quill (hidden, locked, readonly or default).
+				if (hasNote == '0' && isAdmin == '0') {
+					// Hide Quill 
+					hiddenMode = '1';
+					console.log('hidden mode 1');
+				}
+				else if (hasNote == '1' && isAdmin == '0' && isPublic == '0') {
+					hiddenMode = '1';
+					console.log('hidden mode 2');
+				}
+				if (hasNote == '1' && isAdmin == '1' && isCreator == '0') {
+					// Lock Quill
+					lockedMode = '1';
+					console.log('locked mode');
+				}
+				if (hasNote == '1' && isCreator == '0' && isAdmin == '0' && isPublic == '1') {
+					// Readonly Quill
+					readOnlyMode = '1';
+					console.log('readonly mode');
+				}
+
+				if (hasNote == '1') {
+					if (hiddenMode == '1') {
+						// Hide Quill
+						$('#wp-admin-bar-admin-notes-anywhere').remove();
+					}
+					else if (lockedMode == '1') {
+						// Display lock.
+						var style = document.createElement('style');
+						style.textContent = newPseudoStyle;
+						document.head.appendChild(style);
+					}
+					else {
+						// Load Quill + content
+						if (readOnlyMode == '1') {
+							// Display note in read-only mode and hide toolbar.
+							quill.enable(false);
+							$('.ql-toolbar').hide();
+						}
 					}
 					// Place retrieved content in Quill editor.
 					var delta = quill.clipboard.convert({ html: response.data.content });
 					quill.setContents(delta);
 					$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
 					// console.log(response.data.public);
-					if(response.data.public === "1" ) {
+					if (response.data.public == "1") {
 						$('#ana-public-checkbox').prop('checked', true);
 					} else {
 						$('#ana-public-checkbox').prop('checked', false);
 					}
-				} 
+				}
 			} else {
 				console.error('Error while receiving data:', response);
 			}
 		})
 		.fail(function (xhr, status, error) {
-				console.error('AJAX Error:', error);
+			console.error('AJAX Error:', error);
 		});
 
 		/**
@@ -151,26 +226,26 @@
 					nonce: ana_data_object.check_ana_save_nonce,
 				}
 			})
-			.done(function (response) {
-				if (response.success) {
-					$('.ql-save').css('visibility', 'hidden');
-					$('#ana-public-checkbox').css('visibility', 'hidden');
-					$('.ana-checkbox-text').css('visibility', 'hidden');
-					$('.ql-response').css('visibility', 'visible');
-					setTimeout(function() {
-						$('.ql-save').css('visibility', 'visible');
-						$('#ana-public-checkbox').css('visibility', 'visible');
-						$('.ana-checkbox-text').css('visibility', 'visible');
-						$('.ql-response').css('visibility', 'hidden');
-					}, 3000);
-				} else {
-					window.alert('Failed to save note: ' + response.data.message);
-				}
-			})
-			.fail(function (xhr, status, error) {
-				console.error('AJAX Error:', nonce);
-				window.alert('AJAX Error: ' + error);
-			});			
+				.done(function (response) {
+					if (response.success) {
+						$('.ql-save').css('visibility', 'hidden');
+						$('#ana-public-checkbox').css('visibility', 'hidden');
+						$('.ana-checkbox-text').css('visibility', 'hidden');
+						$('.ql-response').css('visibility', 'visible');
+						setTimeout(function () {
+							$('.ql-save').css('visibility', 'visible');
+							$('#ana-public-checkbox').css('visibility', 'visible');
+							$('.ana-checkbox-text').css('visibility', 'visible');
+							$('.ql-response').css('visibility', 'hidden');
+						}, 3000);
+					} else {
+						window.alert('Failed to save note: ' + response.data.message);
+					}
+				})
+				.fail(function (xhr, status, error) {
+					console.error('AJAX Error:', nonce);
+					window.alert('AJAX Error: ' + error);
+				});
 		});
-	});	
+	});
 })(jQuery);
