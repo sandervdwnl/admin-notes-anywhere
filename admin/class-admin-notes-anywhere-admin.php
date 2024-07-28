@@ -73,7 +73,7 @@ class Admin_Notes_Anywhere_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/admin-notes-anywhere-admin.css', array(), $this->version, 'all' );
-		wp_enqueue_style( 'quill-css', 'https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css' );
+		wp_enqueue_style( 'quill-css', plugin_dir_url( __FILE__ ) . 'css/quill.css', array(), '2.0', 'all' );
 		wp_enqueue_style( 'dashicons' );
 	}
 
@@ -97,7 +97,7 @@ class Admin_Notes_Anywhere_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-notes-anywhere-admin.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( 'quill-js', 'https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js' );
+		wp_enqueue_script( 'quill-js', plugin_dir_url( __FILE__ ) . 'js/quill.js', array(), '2.0', false );
 
 		// Pass nonce to Save button.
 		wp_localize_script(
@@ -235,7 +235,7 @@ class Admin_Notes_Anywhere_Admin {
 				$data['public']          = $row->public;
 				$data['current_user_id'] = get_current_user_id();
 				$data['is_admin']        = current_user_can( 'manage_options' );
-				$data['is_creator']      = get_current_user_id() == $row->creator_id ? 1 : 0;
+				$data['is_creator']      = get_current_user_id() === $row->creator_id ? 1 : 0;
 			}
 			wp_send_json_success( $data );
 		}
