@@ -39,6 +39,7 @@
 		if (!$('#quill-container').length) {
 			$('#wpadminbar').after('<div id="quill-container" style="display: none;"><div id="quill-editor"></div></div>');
 		}
+		console.log('el added');
 
 		// Quill toolbar options
 		const toolbarOptions = [
@@ -46,7 +47,7 @@
 			[{ 'list': 'ordered' }, { 'list': 'bullet' }],
 			['align'],
 		];
-
+		console.log('toolbar added');
 
 		// Initialize Quill on the hidden element
 		const quill = new Quill('#quill-editor', {
@@ -56,6 +57,7 @@
 			},
 			theme: 'snow'
 		});
+		console.log('quill initialized');
 
 		// Add save button, public checkbox and response to toolbar, if user is admin.
 		if (ana_data_object.is_admin === '1') {
@@ -67,6 +69,7 @@
 			var anaSaveNonce = ana_data_object.nonce;
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
 		}
+		console.log('save btn added');
 
 		// Add event listener for the dynamically added checkbox and save status to variable.
 		var public_checkbox_checked = 0;
@@ -113,6 +116,7 @@
 			}
 		})
 		.done(function (response) {
+			console.log('ajax success');
 			if (response.success) {
 				console.log('admin response: ' + response.data.is_admin);
 				console.log('creator id: ' + response.data.creator_id);
@@ -156,37 +160,35 @@
 					readOnlyMode = '1';
 					console.log('readonly mode');
 				}
-
-				if (hasNote == '1') {
-					if (hiddenMode == '1') {
-						// Hide Quill
-						$('#wp-admin-bar-admin-notes-anywhere').remove();
-					}
-					else if (lockedMode == '1') {
-						// Display lock.
-						var style = document.createElement('style');
-						style.textContent = newPseudoStyle;
-						document.head.appendChild(style);
-					}
-					else {
-						// Load Quill + content
-						if (readOnlyMode == '1') {
-							// Display note in read-only mode and hide toolbar.
-							quill.enable(false);
-							$('.ql-toolbar').hide();
-						}
-					}
-					// Place retrieved content in Quill editor.
-					var delta = quill.clipboard.convert({ html: response.data.content });
-					quill.setContents(delta);
-					$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
-					// console.log(response.data.public);
-					if (response.data.public == "1") {
-						$('#ana-public-checkbox').prop('checked', true);
-					} else {
-						$('#ana-public-checkbox').prop('checked', false);
+				if (hiddenMode == '1') {
+					// Hide Quill
+					$('#wp-admin-bar-admin-notes-anywhere').remove();
+				}
+				else if (lockedMode == '1') {
+					// Display lock.
+					var style = document.createElement('style');
+					style.textContent = newPseudoStyle;
+					document.head.appendChild(style);
+				}
+				else {
+					// Load Quill + content
+					if (readOnlyMode == '1') {
+						// Display note in read-only mode and hide toolbar.
+						quill.enable(false);
+						$('.ql-toolbar').hide();
 					}
 				}
+				// Place retrieved content in Quill editor.
+				var delta = quill.clipboard.convert({ html: response.data.content });
+				quill.setContents(delta);
+				$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
+				// console.log(response.data.public);
+				if (response.data.public == "1") {
+					$('#ana-public-checkbox').prop('checked', true);
+				} else {
+					$('#ana-public-checkbox').prop('checked', false);
+				}
+				
 			} else {
 				console.error('Error while receiving data:', response);
 			}
@@ -205,6 +207,7 @@
 
 			// Toggle the display of the Quill editor container.
 			$('#quill-container').toggle();
+			console.log('open close event added');
 		});
 
 		/**
