@@ -15,6 +15,10 @@
     height: 50px;;
 }
 
+#wp-admin-bar-admin-notes-anywhere {
+  visibility: hidden;
+}
+
 /* CSS for arrow down when #quill-container is not displayed */
 #wp-admin-bar-admin-notes-anywhere a::after {
     right: 0;

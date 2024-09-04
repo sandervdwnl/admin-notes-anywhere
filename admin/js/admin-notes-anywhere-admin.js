@@ -90,6 +90,7 @@
 		}
 			#wp-admin-bar-admin-notes-anywhere a {
 				pointer-events: none;
+				title
 		}
 		`;
 
@@ -178,6 +179,8 @@
 						$('.ql-toolbar').hide();
 					}
 				}
+				// Quill is hidden by default. When Quill is loaded in the correct mode, show Quill in admin bar.
+				$('#wp-admin-bar-admin-notes-anywhere').css(	'visibility', 'visible');
 				// Place retrieved content in Quill editor.
 				var delta = quill.clipboard.convert({ html: response.data.content });
 				quill.setContents(delta);
