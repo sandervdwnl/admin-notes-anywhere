@@ -39,7 +39,6 @@
 		if (!$('#quill-container').length) {
 			$('#wpadminbar').after('<div id="quill-container" style="display: none;"><div id="quill-editor"></div></div>');
 		}
-		console.log('el added');
 
 		// Quill toolbar options
 		const toolbarOptions = [
@@ -47,7 +46,6 @@
 			[{ 'list': 'ordered' }, { 'list': 'bullet' }],
 			['align'],
 		];
-		console.log('toolbar added');
 
 		// Initialize Quill on the hidden element
 		const quill = new Quill('#quill-editor', {
@@ -57,7 +55,6 @@
 			},
 			theme: 'snow'
 		});
-		console.log('quill initialized');
 
 		// Add save button, public checkbox and response to toolbar, if user is admin.
 		if (ana_data_object.is_admin === '1') {
@@ -69,7 +66,6 @@
 			var anaSaveNonce = ana_data_object.nonce;
 			$('.ql-save').attr('data-nonce', anaSaveNonce);
 		}
-		console.log('save btn added');
 
 		// Add event listener for the dynamically added checkbox and save status to variable.
 		var public_checkbox_checked = 0;
@@ -117,26 +113,17 @@
 			}
 		})
 		.done(function (response) {
-			console.log('ajax success');
 			if (response.success) {
-				console.log('admin response: ' + response.data.is_admin);
-				console.log('creator id: ' + response.data.creator_id);
-				console.log('current user id: ' + response.data.current_user_id);
-				console.log('creator response: ' + response.data.is_creator);
 				// Set vars.
 				if (response.data.is_admin == '1') {
-					console.log('is admin');
 					isAdmin = '1'
 				}
 				if (response.data.content) {
-					console.log('has note');
 					hasNote = '1';
 					if (response.data.is_creator == '1') {
-						console.log('is creator');
 						isCreator = '1';
 					}
 					if (response.data.public == '1') {
-						console.log('is public');
 						isPublic = '1';
 					}
 				}
@@ -145,21 +132,17 @@
 				if (hasNote == '0' && isAdmin == '0') {
 					// Hide Quill 
 					hiddenMode = '1';
-					console.log('hidden mode 1');
 				}
 				else if (hasNote == '1' && isAdmin == '0' && isPublic == '0') {
 					hiddenMode = '1';
-					console.log('hidden mode 2');
 				}
 				if (hasNote == '1' && isAdmin == '1' && isCreator == '0') {
 					// Lock Quill
 					lockedMode = '1';
-					console.log('locked mode');
 				}
 				if (hasNote == '1' && isCreator == '0' && isAdmin == '0' && isPublic == '1') {
 					// Readonly Quill
 					readOnlyMode = '1';
-					console.log('readonly mode');
 				}
 				if (hiddenMode == '1') {
 					// Hide Quill
@@ -185,7 +168,6 @@
 				var delta = quill.clipboard.convert({ html: response.data.content });
 				quill.setContents(delta);
 				$('#wp-admin-bar-admin-notes-anywhere .ab-item').css('background', '#d63638');
-				// console.log(response.data.public);
 				if (response.data.public == "1") {
 					$('#ana-public-checkbox').prop('checked', true);
 				} else {
@@ -210,7 +192,6 @@
 
 			// Toggle the display of the Quill editor container.
 			$('#quill-container').toggle();
-			console.log('open close event added');
 		});
 
 		/**
