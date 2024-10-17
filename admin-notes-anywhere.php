@@ -16,7 +16,7 @@
  * Plugin Name:       Admin Notes Anywhere
  * Plugin URI:        https://bonwp.net
  * Description:       Add a note on any admin page to keep track of all your tasks.
- * Version:           1.0.0
+ * Version:           1.0.0-alpha.1
  * Author:            Sander van der WIndt
  * Author URI:        https://github.com/sandervdwnl/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'ADMIN_NOTES_ANYWHERE_VERSION', '1.0.0' );
+define( 'ADMIN_NOTES_ANYWHERE_VERSION', '1.0.0-alpha.1' );
 
 /**
  * The code that runs during plugin activation.
