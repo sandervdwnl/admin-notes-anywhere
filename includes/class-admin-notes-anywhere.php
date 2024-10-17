@@ -77,7 +77,6 @@ class Admin_Notes_Anywhere {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
 	}
 
 	/**
@@ -88,7 +87,6 @@ class Admin_Notes_Anywhere {
 	 * - Admin_Notes_Anywhere_Loader. Orchestrates the hooks of the plugin.
 	 * - Admin_Notes_Anywhere_i18n. Defines internationalization functionality.
 	 * - Admin_Notes_Anywhere_Admin. Defines all hooks for the admin area.
-	 * - Admin_Notes_Anywhere_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -114,12 +112,6 @@ class Admin_Notes_Anywhere {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-admin-notes-anywhere-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( __DIR__ ) . 'public/class-admin-notes-anywhere-public.php';
 
 		$this->loader = new Admin_Notes_Anywhere_Loader();
 	}
@@ -156,21 +148,6 @@ class Admin_Notes_Anywhere {
 		$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'ana_add_admin_bar_item', 999 );
 		$this->loader->add_action( 'wp_ajax_ana_save_content', $plugin_admin, 'ana_save_content' );
 		$this->loader->add_action( 'wp_ajax_ana_get_content', $plugin_admin, 'ana_get_content' );
-	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_public_hooks() {
-
-		$plugin_public = new Admin_Notes_Anywhere_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 	}
 
 	/**
