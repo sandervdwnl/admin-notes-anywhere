@@ -112,6 +112,12 @@ class Admin_Notes_Anywhere_Admin {
 		);
 	}
 
+	/**
+	 * Adds a menu item to the WP admin bar.
+	 *
+	 * @param WP_Admin_Bar $admin_bar
+	 * @return void
+	 */
 	public function ana_add_admin_bar_item( WP_Admin_Bar $admin_bar ) {
 		$admin_bar->add_menu(
 			array(
@@ -127,6 +133,11 @@ class Admin_Notes_Anywhere_Admin {
 		);
 	}
 
+	/**
+	 * Saves notes to the db.
+	 *
+	 * @return void
+	 */
 	public function ana_save_content() {
 
 		check_ajax_referer( 'ana_save_nonce', 'nonce' );
@@ -138,15 +149,13 @@ class Admin_Notes_Anywhere_Admin {
 
 		global $wpdb;
 
-		$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
+		$parsed_url = wp_parse_url( $_SERVER['HTTP_REFERER'] );
 		$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
-		// When page is admin and query contains parameter page (...admin.php/?page=example...), save path + page query arg.
-		if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
-			if ( str_contains( $parsed_url['query'], '&' ) ) {
-				$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
-			} else {
-				$page .= '--' . $parsed_url['query'];
-			}
+		// Save page and first query arg (example.php--example_type=example).
+		if ( str_contains( $parsed_url['query'], '&' ) ) {
+			$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
+		} else {
+			$page .= '--' . $parsed_url['query'];
 		}
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
 		$public           = isset( $_POST['public'] ) ? wp_kses_post( $_POST['public'] ) : 0;
@@ -198,6 +207,11 @@ class Admin_Notes_Anywhere_Admin {
 		wp_send_json_success( array( 'message' => 'Note saved successfully' ) );
 	}
 
+	/**
+	 * Retrieves notes from the db.
+	 *
+	 * @return void
+	 */
 	public function ana_get_content() {
 
 		$nonce_verified = check_ajax_referer( 'ana_get_nonce', 'nonce' );
@@ -210,15 +224,13 @@ class Admin_Notes_Anywhere_Admin {
 
 			$data = array();
 
-			$parsed_url = parse_url( $_SERVER['HTTP_REFERER'] );
+			$parsed_url = wp_parse_url( $_SERVER['HTTP_REFERER'] );
 			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
-			// When page is admin and query contains parameter page (...admin.php/?page=example...), check db for path + page query arg.
-			if ( str_starts_with( $parsed_url['query'], 'page=' ) ) {
-				if ( str_contains( $parsed_url['query'], '&' ) ) {
-					$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
-				} else {
-					$page .= '--' . $parsed_url['query'];
-				}
+			// Save page and first query arg (example.php--example_type=example).
+			if ( str_contains( $parsed_url['query'], '&' ) ) {
+				$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
+			} else {
+				$page .= '--' . $parsed_url['query'];
 			}
 			$table_name = $wpdb->prefix . 'ana_notes';
 
