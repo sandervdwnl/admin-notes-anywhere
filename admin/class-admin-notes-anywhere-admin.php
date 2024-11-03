@@ -157,7 +157,7 @@ class Admin_Notes_Anywhere_Admin {
 		} else {
 			$page .= '--' . $parsed_url['query'];
 		}
-		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
+		$content          = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
 		$public           = isset( $_POST['public'] ) ? absint( wp_unslash( $_POST['public'] ) ) : 0;
 		$uid              = get_current_user_id();
 		$current_datetime = current_datetime();
