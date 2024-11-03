@@ -115,7 +115,7 @@ class Admin_Notes_Anywhere_Admin {
 	/**
 	 * Adds a menu item to the WP admin bar.
 	 *
-	 * @param WP_Admin_Bar $admin_bar
+	 * @param WP_Admin_Bar $admin_bar The WP admin bar.
 	 * @return void
 	 */
 	public function ana_add_admin_bar_item( WP_Admin_Bar $admin_bar ) {
@@ -149,16 +149,16 @@ class Admin_Notes_Anywhere_Admin {
 
 		global $wpdb;
 
-		$parsed_url = wp_parse_url( $_SERVER['HTTP_REFERER'] );
+		$parsed_url = isset( $_SERVER['HTTP_REFERER'] ) ? wp_parse_url( sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) : array();
 		$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
 		// Save page and first query arg (example.php--example_type=example).
-		if ( str_contains( $parsed_url['query'], '&' ) ) {
+		if ( isset( $parsed_url['query'] ) && str_contains( $parsed_url['query'], '&' ) ) {
 			$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
 		} else {
 			$page .= '--' . $parsed_url['query'];
 		}
 		$content          = isset( $_POST['content'] ) ? wp_kses_post( $_POST['content'] ) : '';
-		$public           = isset( $_POST['public'] ) ? wp_kses_post( $_POST['public'] ) : 0;
+		$public           = isset( $_POST['public'] ) ? absint( wp_unslash( $_POST['public'] ) ) : 0;
 		$uid              = get_current_user_id();
 		$current_datetime = current_datetime();
 		$sql_datetime     = $current_datetime->format( 'Y-m-d H:i:s' );
@@ -168,12 +168,13 @@ class Admin_Notes_Anywhere_Admin {
 		// Check if there is a note for this page.
 		$count_rows = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) from $table_name WHERE page = %s",
+				'SELECT COUNT(*) from %i WHERE page = %s',
+				$table_name,
 				$page
 			)
 		);
 
-		if ( $count_rows === '0' ) {
+		if ( '0' === $count_rows ) {
 			// If not, create new row.
 			$wpdb->insert(
 				$table_name,
@@ -216,7 +217,7 @@ class Admin_Notes_Anywhere_Admin {
 
 		$nonce_verified = check_ajax_referer( 'ana_get_nonce', 'nonce' );
 
-		if ( $nonce_verified !== 1 ) {
+		if ( 1 !== $nonce_verified ) {
 			$data['error'] = 'Invalid nonce';
 		} else {
 
@@ -224,10 +225,10 @@ class Admin_Notes_Anywhere_Admin {
 
 			$data = array();
 
-			$parsed_url = wp_parse_url( $_SERVER['HTTP_REFERER'] );
+			$parsed_url = isset( $_SERVER['HTTP_REFERER'] ) ? wp_parse_url( sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) ) : array();
 			$page       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
 			// Save page and first query arg (example.php--example_type=example).
-			if ( str_contains( $parsed_url['query'], '&' ) ) {
+			if ( isset( $parsed_url['query'] ) && str_contains( $parsed_url['query'], '&' ) ) {
 				$page .= '--' . substr( $parsed_url['query'], 0, strpos( $parsed_url['query'], '&' ) );
 			} else {
 				$page .= '--' . $parsed_url['query'];
@@ -236,7 +237,8 @@ class Admin_Notes_Anywhere_Admin {
 
 			$row = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT content, creator_id, public from $table_name WHERE page = %s",
+					'SELECT content, creator_id, public from %i WHERE page = %s',
+					$table_name,
 					$page
 				)
 			);
