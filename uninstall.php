@@ -33,9 +33,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Drop notes table.
 global $wpdb;
 $table = esc_sql( $wpdb->prefix . 'ana_notes' );
-$wpdb->query(
+$wpdb->query( //phpcs:ignore WordPress.DB.DirectDatabaseQuery 
 	$wpdb->prepare(
-		'DROP TABLE IF EXISTS %i',
+		'DROP TABLE IF EXISTS %i', //phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$table
 	)
 );

@@ -166,7 +166,7 @@ class Admin_Notes_Anywhere_Admin {
 		$table_name = $wpdb->prefix . 'ana_notes';
 
 		// Check if there is a note for this page.
-		$count_rows = $wpdb->get_var(
+		$count_rows = $wpdb->get_var( //phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				'SELECT COUNT(*) from %i WHERE page = %s',
 				$table_name,
@@ -176,7 +176,7 @@ class Admin_Notes_Anywhere_Admin {
 
 		if ( '0' === $count_rows ) {
 			// If not, create new row.
-			$wpdb->insert(
+			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$table_name,
 				array(
 					'creator_id'   => $uid,
@@ -190,7 +190,7 @@ class Admin_Notes_Anywhere_Admin {
 			);
 		} else {
 			// If so, update existing row with new content.
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$table_name,
 				array(
 					'content'      => $content,
@@ -205,6 +205,9 @@ class Admin_Notes_Anywhere_Admin {
 				array( '%d', '%s' ),
 			);
 		}
+		// Clear cache fot this page.
+		wp_cache_delete( "note_{$page}" );
+
 		wp_send_json_success( array( 'message' => 'Note saved successfully' ) );
 	}
 
@@ -234,14 +237,20 @@ class Admin_Notes_Anywhere_Admin {
 				$page .= '--' . $parsed_url['query'];
 			}
 			$table_name = $wpdb->prefix . 'ana_notes';
+			$cache_key  = "note_{$page}";
 
-			$row = $wpdb->get_row(
-				$wpdb->prepare(
-					'SELECT content, creator_id, public from %i WHERE page = %s',
-					$table_name,
-					$page
-				)
-			);
+			$row = wp_cache_get( $cache_key );
+
+			if ( false === $row ) {
+				$row = $wpdb->get_row( //phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					$wpdb->prepare(
+						'SELECT content, creator_id, public from %i WHERE page = %s',
+						$table_name,
+						$page
+					)
+				);
+				wp_cache_set( $cache_key, $row );
+			}
 
 			if ( $row ) {
 				$data['content']         = $row->content;

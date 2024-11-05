@@ -1,9 +1,9 @@
-=== Plugin Name ===
+=== Admin Notes Anywhere ===
 Contributors: sandervdwnl
 Tags: notes
 Requires at least: 8.1
 Tested up to: 6.6
-Stable tag: 0.9
+Stable tag: 1.0.0-alpha.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,14 @@ Admin users can only read and edit notes that they created themself.
 
 == Changelog ==
 
-= 0.9 =
-* Initial version.
+= 1.0.0-alpha.3 =
+* Fixed phpcs warnings for improved security.
+* Added cached db queries.
+
+= 1.0.0-alpha.2 =
+* Fixed phpcs error for improved security.
+* One note is saved per unique admin page and first query argument.
+
+= 1.0.0-alpha.1 =
+* Initial pre-releae version.
 
