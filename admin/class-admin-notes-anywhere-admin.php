@@ -96,6 +96,10 @@ class Admin_Notes_Anywhere_Admin {
 		 * class.
 		 */
 
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-notes-anywhere-admin.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( 'quill-js', plugin_dir_url( __FILE__ ) . 'js/quill.js', array(), '2.0', false );
 
@@ -119,6 +123,9 @@ class Admin_Notes_Anywhere_Admin {
 	 * @return void
 	 */
 	public function ana_add_admin_bar_item( WP_Admin_Bar $admin_bar ) {
+		if ( ! is_admin() ) {
+			return;
+		}
 		$admin_bar->add_menu(
 			array(
 				'id'     => 'admin-notes-anywhere',
