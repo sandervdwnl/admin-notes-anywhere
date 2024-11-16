@@ -3,7 +3,7 @@ Contributors: sandervdwnl
 Tags: notes
 Requires at least: 8.1
 Tested up to: 6.6
-Stable tag: 1.0.0-alpha.3
+Stable tag: 1.0.0-alpha.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,9 +31,12 @@ Public notes are visible to all other non-admin users, while private notes are r
 
 = Can other users read or edit notes? =
 
-Admin users can only read and edit notes that they created themself.
+Admin users can only read and edit notes that they created themself. If an admin user already created a note for the page, the note is locked for other admins. This is displayd by a lock symbol.
 
 == Changelog ==
+
+= 1.0.0-alpha.4 =
+* Fixed Notes admin bar item displayed on non-admin page.
 
 = 1.0.0-alpha.3 =
 * Fixed phpcs warnings for improved security.
