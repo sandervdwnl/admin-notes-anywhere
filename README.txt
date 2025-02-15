@@ -21,6 +21,10 @@ This plugin enables admin users to create and publish notes on any page within t
 
 == Frequently Asked Questions ==
 
+= How to use this plugin =
+
+THis plugin adds an item to the admin bar when activated. From there admin users can create notes. When a note is published on an admin page, it becomes avaialble to read for non-admin users. This can also be done with the admin bar item.
+
 = How do I control who sees the notes? =
 
 Notes can be added as Private (by default) or Public.
@@ -31,7 +35,7 @@ Public notes are visible to all other non-admin users, while private notes are r
 
 = Can other users read or edit notes? =
 
-Admin users can only read and edit notes that they created themself. If an admin user already created a note for the page, the note is locked for other admins. This is displayd by a lock symbol.
+Admin users can only read and edit notes that they created themself. If an admin user already created a note for the page, the note is locked for other admins. This is displayed by a lock symbol.
 
 == Changelog ==
 
