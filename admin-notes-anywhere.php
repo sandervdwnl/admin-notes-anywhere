@@ -14,7 +14,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Admin Notes Anywhere
- * Plugin URI:        https://bonwp.net
+ * Plugin URI:        https://bonwp.com
  * Description:       Add a note on any admin page to keep track of all your tasks.
  * Version:           1.0.0
  * Author:            Sander van der WIndt
